@@ -20,6 +20,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
         $router->post('register', 'AuthController@register');
         $router->post('login', 'AuthController@login');
+        $router->get('renovar/{id}', 'AuthController@renovarToken');
      }); 
      $router->group(['prefix' => 'user'], function () use ($router) {
         $router->get('profile', 'UserController@profile');
@@ -58,6 +59,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->put('update-tipo/{id_tipo}', 'TipoController@updateTipo');
         $router->get('get-tipos', 'TipoController@getTipos');
         $router->get('get-tipo/{id_tipo}', 'TipoController@getTipo');
+        $router->get('hola', 'TipoController@getHola');
      });
      $router->group(['prefix' => 'archivo'], function () use ($router) {
         $router->post('store-archivo', 'ArchivoController@storeArchivo');

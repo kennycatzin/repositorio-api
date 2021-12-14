@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class Controller extends BaseController
 {
-    protected function respondWithToken($token)
+    protected function respondWithToken($token, $data)
     {
         return response()->json([
+            'ok' => true,
             'token' => $token,
+            'usuario' => $data,
             'token_type' => 'bearer',
             'expires_in' => Auth::factory()->getTTL() * 60
         ], 200);

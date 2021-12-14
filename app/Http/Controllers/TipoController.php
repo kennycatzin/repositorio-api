@@ -56,5 +56,12 @@ class TipoController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }
+    public function getHola(){
+        try {
+            return $this->crearRespuesta(1, null, 'holaaa', 200);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
+        }
+    }
 
 }

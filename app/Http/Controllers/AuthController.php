@@ -38,11 +38,11 @@ class AuthController extends Controller
             $user->save();
 
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
+            return response()->json(['user' => $user, 'message' => 'CREATED', 'ok' => true], 201);
 
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['message' => 'User Registration Failed! '.$e], 409);
+            return response()->json(['message' => 'User Registration Failed! '.$e, 'ok'=> false], 409);
         }
 
     }
@@ -55,12 +55,34 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only(['email', 'password']);
+        $data = User::where('email', $request["email"])->first();
+        $count = User::where('email', $request["email"])->count();
+
 
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $data);
+    }
+    public function renovarToken($id){
+        $credentials = [
+                        'email' => "kenny.catzin@gmail.com", 
+                        'password' => "123456"
+                    ];
+
+        $user = User::where('id', $id)->count();
+        $user_data = User::where('id', $id)->first();
+
+        if($user > 0){
+            if(! $token = Auth::attempt($credentials)){
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            return $this->respondWithToken($token, $user_data);
+        }else{
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
     }
 
 
