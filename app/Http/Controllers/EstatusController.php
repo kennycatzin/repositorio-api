@@ -58,5 +58,18 @@ class EstatusController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }    
+    public function setActivoFalsoEstatus(Request $request, $id_estatus){
+        try {
+            $estatus = Estatus::find($id_estatus);
+            $estatus->activo = false;
+            $estatus->timestamps = false;
+            $estatus->fecha_modificacion = $this->fechaActual();
+            $estatus->usuario_modificacion = $request->get('usuario');
+            $estatus->save();
+            return $this->crearRespuesta(1, $estatus, 'Se ha eliminado la información', 201);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo la actualización la información '.$th->getMessage(), 300);
+        }
+    }    
 
 }

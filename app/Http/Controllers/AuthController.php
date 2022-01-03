@@ -19,15 +19,16 @@ class AuthController extends Controller
         //validate incoming request 
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
         ]);
         try {
             $user = new User;
             $user->name = $request->input('name');
-            $user->email = $request->input('email');
+            // $user->email = $request->input('email');
+            $user->usuario = $request->input('usuario');
             $user->id_rol = 0;
-            $user->activo = 0;
+            $user->activo = 1;
+            $user->tipo = '';
             $user->fecha_creacion = $this->fechaActual();
             $user->fecha_modificacion = $this->fechaActual();
             $user->usuario_creacion = $request->input('name');
@@ -50,13 +51,13 @@ class AuthController extends Controller
     {
           //validate incoming request 
         $this->validate($request, [
-            'email' => 'required|string',
+            'usuario' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only(['email', 'password']);
-        $data = User::where('email', $request["email"])->first();
-        $count = User::where('email', $request["email"])->count();
+        $credentials = $request->only(['usuario', 'password']);
+        $data = User::where('usuario', $request["usuario"])->first();
+        $count = User::where('usuario', $request["usuario"])->count();
 
 
         if (! $token = Auth::attempt($credentials)) {

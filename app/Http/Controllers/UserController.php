@@ -65,7 +65,7 @@ class UserController extends Controller
             $usuario->fecha_modificacion = $this->fechaActual();
             $usuario->usuario_modificacion = $request->get('usuario');
             $usuario->save();
-            $this->asignarRolUsuario($request);
+            // $this->asignarRolUsuario($request);
             return $this->crearRespuesta(1, $usuario, 'Se ha modificado la información', 201);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getMessage(), 300);
@@ -74,6 +74,7 @@ class UserController extends Controller
     public function asignarRolUsuario(Request $request){
         try {
             $id_usuario = $request->get('id_usuario');
+            $tipo = $request->get('tipo');
             $id_rol = $request->get('id_rol');
             $usuario = $request->get('usuario');
             $archivos = DB::table('archivo_rol')
@@ -99,12 +100,14 @@ class UserController extends Controller
                                     ->where('id_archivo', $archivo->id_archivo)
                                     ->first();
                     if($count_val_archivo == 0){
+                        $id_estatus = 3;
                         DB::insert('insert into archivo_usuario 
                         (id_usuario, id_archivo, fecha_caducidad, vigente, tipo, activo, 
-                        usuario_creacion, usuario_modificacion, fecha_creacion, fecha_modificacion) 
-                        values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                        usuario_creacion, usuario_modificacion, fecha_creacion, 
+                        fecha_modificacion, id_estatus, fecha_estatus) 
+                        values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                         [$id_usuario, $archivo->id_archivo, $this->fechaActual(), 1, 1, 1, $usuario, $usuario, 
-                        $this->fechaActual(), $this->fechaActual()]);
+                        $this->fechaActual(), $this->fechaActual(), $id_estatus, $this->fechaActual()]);
                     }else{
                         if($val_archivo->activo == 0){
                             DB::update('update archivo_usuario 
@@ -114,6 +117,7 @@ class UserController extends Controller
                         }
                     }
                 }
+                DB::update('update users set activo = 1, tipo = ?, id_rol = ? where id = ?', [ $tipo, $id_rol, $id_usuario]);
                 return $this->crearRespuesta(1, null, 'Se ha configurado el perfil', 201);
             }else{
                 return $this->crearRespuesta(0, null, 'No existe una configuración para este perfil', 201);
@@ -188,9 +192,11 @@ class UserController extends Controller
                                     ->join('categoria as c', 'c.id', '=', 's.id_categoria')
                                     ->join('detalle_archivo as da', 'a.id', '=', 'da.id_archivo')
                                     ->select('c.id as id_categoria', 
-                                            'c.descripcion as categoria', 
+                                            'c.titulo as categoria',
+                                            'c.descripcion as desc_categoria',  
                                             's.id as id_subcategoria',
-                                            's.descripcion as subcategoria', 
+                                            's.titulo as subcategoria', 
+                                            's.descripcion as desc_subcategoria',  
                                             'a.nombre',
                                             'a.descripcion',
                                             'da.url')
@@ -201,14 +207,16 @@ class UserController extends Controller
             foreach($list_archivos as $lista){
                 if(!in_array($lista->id_categoria, $categorias, true)){
                     array_push($categorias, array(
-                                                    "id_categoria" => $lista->id_categoria,
-                                                    "categoria" => $lista->categoria
+                                                    "id" => $lista->id_categoria,
+                                                    "titulo" => $lista->categoria,
+                                                    "descripcion" => $lista->desc_categoria
                                                 ));
                 }
                 if(!in_array($lista->id_subcategoria, $subcategorias, true)){
                     array_push($subcategorias, array(
-                                                    "id_subcategoria" => $lista->id_subcategoria,
-                                                    "subcategoria" => $lista->subcategoria
+                                                    "id" => $lista->id_subcategoria,
+                                                    "titulo" => $lista->subcategoria,
+                                                    "descripcion" => $lista->desc_subcategoria
                                                 ));
                 }
             }
@@ -230,10 +238,12 @@ class UserController extends Controller
         try {
             $id_usuario = $request->get('id_usuario');
             $id_subcategoria = $request->get('id_subcategoria');
+            $miUrl = env('APP_URL', '');
             $data = DB::table('archivo_usuario as au')
                             ->join('archivo as a', 'a.id', '=', 'au.id_archivo')
                             ->join('detalle_archivo as da', 'a.id', '=', 'da.id_archivo')
                             ->select(
+                                    'au.id as id_archivo',
                                     'a.id_subcategoria',
                                     'a.nombre',
                                     'a.descripcion',
@@ -243,9 +253,108 @@ class UserController extends Controller
                             ->where('a.id_subcategoria', $id_subcategoria)
                             ->where('au.id_usuario', $id_usuario)
                             ->get();
+            foreach($data as $miData){
+
+                $miData->url = $miUrl.$miData->url;
+            }
             return $this->crearRespuesta(1, $data, 'info', 200);            
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getLine().' '.$th->getMessage(), 300);
         }
     }
+    public function setEstatusArchivoUsuario(request $request) {
+        try {
+            $estatus = 3;
+            $id_archivo = $request['id_archivo'];
+            DB::update('update archivo_usuario 
+            set id_estatus = ?, fecha_estatus = ?
+            where id = ?', 
+            [$estatus, $this->fechaActual(), $id_archivo]);
+            return $this->crearRespuesta(1, null, 'Se ha actualizado correctamente.', 201);
+
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);
+        }
+    }
+    public function totalesDashboard($id_usuario){
+        try {
+            $id_estatus_leido = 3;
+            $id_estatus_nuevo = 4;
+            $miUrl = env('APP_URL', '');
+            $contador = 1;
+            $leidos=DB::table('archivo_usuario')
+            ->select('*')
+            ->where('id_usuario', $id_usuario)
+            ->where('activo', 1)
+            ->where('id_estatus', $id_estatus_leido)
+            ->count();
+            
+            $nuevos=DB::table('archivo_usuario')
+            ->select('*')
+            ->where('id_usuario', $id_usuario)
+            ->where('activo', 1)
+            ->where('id_estatus', $id_estatus_nuevo)
+            ->count();
+            
+            $totales=DB::table('archivo_usuario')
+            ->select('*')
+            ->where('id_usuario', $id_usuario)
+            ->where('activo', 1)
+            ->count();  
+
+            $tableros = DB::table('tablero')
+                        ->select('id', 'titulo', 'descripcion', 'url', 'imagen')
+                        ->orderBy('titulo', 'ASC')
+                        ->whereDate('fecha_inicio', '<=', $this->fechaActual())
+                        ->whereDate('fecha_final', '>=', $this->fechaActual())
+                        ->where('activo', 1)
+                        ->get();
+            foreach($tableros as $tablero){
+                $tablero->orden = $contador;
+                $tablero->url = $miUrl.$tablero->url;
+                $contador = $contador + 1;
+            }
+
+            $data = [
+                "nuevos"=> $nuevos,
+                "leidos" => $leidos,
+                "totales" => $totales
+            ];
+
+            $info = [
+                "dashboard" => $data,
+                "tableros" => $tableros
+            ];
+            return $this->crearRespuesta(1, $info, 'Info.', 201); 
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);
+        }
+    }
+    public function usuariosSinAsignar(){
+        try {
+            $data = DB::table('users')
+            ->select('*')
+            ->where('id_rol', 0)
+            ->where('activo', 1)
+            ->orderBy('fecha_creacion', 'ASC')
+            ->get();
+            return $this->crearRespuesta(1, $data, 'Info.', 200);
+
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);
+        }
+    }
+    public function setActivoFalsoUsuario(Request $request, $id_usuario){
+        try {
+            $usuario = User::find($id_usuario);
+            $usuario->activo = false;
+            $usuario->timestamps = false;
+            $usuario->fecha_modificacion = $this->fechaActual();
+            $usuario->usuario_modificacion = $request->get('usuario');
+            $usuario->save();
+            return $this->crearRespuesta(1, $usuario, 'Se ha eliminado la información', 201);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo la actualización la información '.$th->getMessage(), 300);
+        }
+    }    
 }

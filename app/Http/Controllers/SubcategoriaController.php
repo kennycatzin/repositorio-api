@@ -10,6 +10,7 @@ class SubcategoriaController extends Controller
         try {
             $subcategoria = new Subcategoria;
             $subcategoria->id_categoria = $request->get('orden');
+            $subcategoria->titulo = $request->get('titulo');
             $subcategoria->descripcion = $request->get('descripcion');
             $subcategoria->orden = $request->get('orden');
             $subcategoria->activo = true;
@@ -28,6 +29,7 @@ class SubcategoriaController extends Controller
         try {
             $subcategoria = Subcategoria::find($id_subcategoria);
             $subcategoria->descripcion = $request->get('descripcion');
+            $subcategoria->titulo = $request->get('titulo');
             $subcategoria->orden = $request->get('orden');
             $subcategoria->activo = $request->get('activo');;
             $subcategoria->timestamps = false;

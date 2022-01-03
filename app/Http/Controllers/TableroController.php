@@ -9,8 +9,6 @@ class TableroController extends Controller
 {
     public function storeTablero(Request $request){
         try {
-            print_r($request->input());
-
             $tablero = new Tablero;
             $tablero->titulo = $request->get('titulo');
             $tablero->descripcion = $request->get('descripcion');
@@ -23,6 +21,7 @@ class TableroController extends Controller
             $tablero->fecha_modificacion = $this->fechaActual();
             $tablero->usuario_creacion = $request->get('usuario');
             $tablero->usuario_modificacion = $request->get('usuario');
+            print_r($request->input());
             $tablero->save();
             $this->fileUpload($request, DB::getPdo()->lastInsertId());
             return $this->crearRespuesta(1, $tablero, 'Se ha creado la información', 201);
@@ -56,19 +55,18 @@ class TableroController extends Controller
                     ->where('id', $id)
                     ->get();
         $response = null;
-        $detalle = (object) ['imagen' => ""];
-        print_r($request->input());
+        $detalle = (object) ['archivo' => ""];
+        print_r($tablero);
         if  (!is_null($tablero)){
             echo "entro";
-            if ($request->hasFile('imagen')) {
-                echo "entrooo";
-                $original_filename = $request->file('imagen')->getClientOriginalName();
+            if ($request->hasFile('archivo')) {
+                print_r('ya no entrioooooooo');
+                $original_filename = $request->file('archivo')->getClientOriginalName();
                 $original_filename_arr = explode('.', $original_filename);
                 $file_ext = end($original_filename_arr);
                 $destination_path = './upload/tablero/';
                 $mi_archivo = 'AFTablero-' . $id . '.' . $file_ext;
-                echo "dentro";
-                if ($request->file('imagen')->move($destination_path, $mi_archivo)) {
+                if ($request->file('archivo')->move($destination_path, $mi_archivo)) {
                     // $detalle->image = './upload/receta/'.$mi_archivo;
                     // $archivo->imagen = $mi_archivo;
                     // $archivo->save();
@@ -99,7 +97,6 @@ class TableroController extends Controller
             $tablero->usuario_modificacion = $request->get('usuario');
             $tablero->save();
             $this->fileUpload($request, $id_tablero);
-            echo "llego aqui";
             return $this->crearRespuesta(1, $tablero, 'Se ha modificado la información', 201);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo la actualización la información '.$th->getMessage(), 300);

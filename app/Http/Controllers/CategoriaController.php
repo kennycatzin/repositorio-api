@@ -12,6 +12,7 @@ class CategoriaController extends Controller
     public function storeCategoria(Request $request){
         try {
             $categoria = new Categoria;
+            $categoria->titulo = $request->get('titulo');
             $categoria->descripcion = $request->get('descripcion');
             $categoria->orden = $request->get('orden');
             $categoria->activo = true;
@@ -29,6 +30,7 @@ class CategoriaController extends Controller
     public function updateCategoria(Request $request, $id_categoria){
         try {
             $categoria = Categoria::find($id_categoria);
+            $categoria->titulo = $request->get('titulo');
             $categoria->descripcion = $request->get('descripcion');
             $categoria->orden = $request->get('orden');
             $categoria->activo = $request->get('activo');
@@ -105,7 +107,19 @@ class CategoriaController extends Controller
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
-        
     }
+    public function bajaCategoria(Request $request, $id_categoria) {
+        try {
+            $usuario = $request->get('usuario');
+            DB::update('update categoria 
+            set activo = 0, usuario_modificacion = ?, fecha_modificacion = ? 
+            where id = ?', [$usuario, $this->fechaActual(), $id_categoria]);
+            return $this->crearRespuesta(1, null, 'info', 200);
+
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo actualizar la información '.$th->getMessage(), 300);
+        }
+    }
+
 
 }

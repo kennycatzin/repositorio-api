@@ -32,6 +32,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('asignar-archivo-temporal', 'UserController@asignarArchivoUsuarioTemporal');
         $router->post('get-listado-archivos', 'UserController@getListadoArchivos');
         $router->post('get-listado-cabeceras', 'UserController@getCatSubCategorias');
+        $router->post('set-archivo-estatus', 'UserController@setEstatusArchivoUsuario');
+        $router->get('get-dashboard/{id_usuario}', 'UserController@totalesDashboard');
+        $router->get('get-usuarios-noasignados', 'UserController@usuariosSinAsignar');
+        $router->put('set-usuario-baja/{id_usuario}', 'UserController@setActivoFalsoUsuario');
+
+        
+        
      });
      $router->group(['prefix' => 'categoria'], function () use ($router) {
         $router->post('store-categoria', 'CategoriaController@storeCategoria');
@@ -39,6 +46,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('get-categorias', 'CategoriaController@getCategorias');
         $router->get('get-categoria/{id_categoria}', 'CategoriaController@getCategoria');
         $router->get('get-listado-documentos', 'CategoriaController@getListadoDocumentos');
+        $router->put('baja-categoria/{id_categoria}', 'CategoriaController@bajaCategoria');
+        
      });
      $router->group(['prefix' => 'subcategoria'], function () use ($router) {
         $router->post('store-subcategoria', 'SubcategoriaController@storeSubcategoria');
@@ -68,12 +77,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('get-archivo/{id_archivo}', 'ArchivoController@getArchivo');
         $router->post('store-detalle-archivo', 'ArchivoController@guardarDetalleArchivo');
         $router->post('get-admin-configurar', 'ArchivoController@getAdminConfigurar');
+
      });
      $router->group(['prefix' => 'estatus'], function () use ($router) {
         $router->post('store-estatus', 'EstatusController@storeEstatus');
         $router->put('update-estatus/{id_estatus}', 'EstatusController@updateEstatus');
         $router->get('get-estatus', 'EstatusController@getEstatusAll');
         $router->get('get-estatus/{id_estatus}', 'EstatusController@getEstatus');
+        $router->put('update-baja/{id_estatus}', 'EstatusController@setActivoFalsoEstatus');
+
+        
      });
      $router->group(['prefix' => 'departamento'], function () use ($router) {
       $router->post('store-departamento', 'DepartamentoController@storeDepartamento');
