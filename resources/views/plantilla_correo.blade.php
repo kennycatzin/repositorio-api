@@ -90,8 +90,8 @@
         </div>
         <form id="enviar_post_correo">
             <hr class="divisor">
-            <h4 class="fuente">Estimado equipo: {{$equipo}}</h4>
-            <p class="fuente">Muchas gracias por estar al tanto de las notificaciones de la plataforma les informamos los siguientes cambios para el documento.</p>
+            <h4 class="fuente">Estimado equipo: </h4>
+            <p class="fuente">Muchas gracias por estar al tanto de las notificaciones de la plataforma les informamos los siguientes cambios.</p>
             <br>
             <h4 class="fuente">Documento: {{$archivo}}</h4>
             <p class="fuente">{{$observaciones}}</p>

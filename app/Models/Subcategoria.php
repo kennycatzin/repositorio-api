@@ -12,5 +12,6 @@ class Subcategoria extends Model
         'usuario_creacion', 'usuario_modificacion'
     ];
     protected $table = 'subcategoria';
+    public $timestamps = false;
 
 }

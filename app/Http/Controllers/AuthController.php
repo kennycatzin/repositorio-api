@@ -19,6 +19,7 @@ class AuthController extends Controller
         //validate incoming request 
         $this->validate($request, [
             'name' => 'required|string',
+            'usuario' => 'required|unique:users',
             'password' => 'required|confirmed',
         ]);
         try {
@@ -43,9 +44,34 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['message' => 'User Registration Failed! '.$e, 'ok'=> false], 409);
+            return response()->json(['message' => 'User Registration Failed! '.$e->getLine(), 'ok'=> false], 409);
         }
-
+    }
+    public function updateUser(Request $request, $id_usuario){
+        try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'password' => 'confirmed',
+            ]);
+            $usuario = User::find($id_usuario);
+            $usuario->name = $request->get('name');
+            // $usuario->email = $request->get('email');
+            $usuario->id_rol = $request->get('id_rol');
+            $usuario->tipo = $request->get('tipo');
+            $usuario->activo = true;
+            $usuario->usuario = $request->get('usuario');
+            $usuario->fecha_modificacion = $this->fechaActual();
+            $usuario->usuario_modificacion = $request->get('id_usuario');
+            if($request->input('password') != ""){
+                $plainPassword = $request->input('password');
+                $usuario->password = app('hash')->make($plainPassword);
+            }            
+            $usuario->save();
+           $this->asignaArchivosUsuario($id_usuario, $request->get('id_rol'), $request->get('id_usuario'));
+            return $this->crearRespuesta(1, $usuario, 'Se ha modificado la información', 201);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getMessage(). ' '.$th->getLine(), 300);
+        }
     }
     public function login(Request $request)
     {
@@ -68,23 +94,17 @@ class AuthController extends Controller
     }
     public function renovarToken($id){
         $credentials = [
-                        'email' => "kenny.catzin@gmail.com", 
+                        'email' => "kenny.catzin", 
                         'password' => "123456"
                     ];
 
         $user = User::where('id', $id)->count();
         $user_data = User::where('id', $id)->first();
-
+        
         if($user > 0){
-            if(! $token = Auth::attempt($credentials)){
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-            return $this->respondWithToken($token, $user_data);
+            return $this->respondWithToken("123456789", $user_data);
         }else{
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-
     }
-
-
 }
