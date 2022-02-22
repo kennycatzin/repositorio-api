@@ -74,7 +74,7 @@ class CategoriaController extends Controller
             foreach($categorias as $categoria){
                 $subcategorias = Subcategoria::where('id_categoria', $categoria->id)
                                             ->where('activo', 1)
-                                            ->orderBy('fecha_modificacion', 'DESC')                        
+                                            ->orderBy('orden', 'ASC')                        
                                             ->get();
                 $contadorSub = 0;
                 foreach($subcategorias as $subcategoria){

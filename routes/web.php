@@ -117,6 +117,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
       $router->get('get-departamentos-paginado/{index}', 'DepartamentoController@getDepartamentosPaginado');
       $router->get('enviar-precio-metal', 'DepartamentoController@cambioPrecioEnviar');
       $router->post('enviar-bases-diarias', 'DepartamentoController@basesDiariasEnviar');
+      $router->post('enviar-correo-general', 'DepartamentoController@correoGeneralEnviar');
 
       
       

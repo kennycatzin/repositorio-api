@@ -148,4 +148,33 @@ class DepartamentoController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }
+    public function correoGeneralEnviar(Request $request){
+        try {
+            $json = json_encode($request->input());
+            $ojso = json_decode($json, true);
+            $copia = $ojso["copia"];
+            $destino = $ojso["destino"];
+            $asunto = $request->get('asunto');
+            $cuerpo = $request->get('cuerpo');
+
+            $copia = json_decode(json_encode($copia), true);
+            $destino = json_decode(json_encode($destino), true);
+
+            $data = array(
+                'titulo' => $asunto,
+                'fecha_actual' => $this->fechaCruda(),
+                'observaciones' =>  $cuerpo
+            );
+
+            Mail::send('plantilla_general', $data, function($message) use ($copia, $destino, $asunto){
+                $message->to($destino)
+                        ->cc($copia)
+                        ->subject($asunto);
+                $message->from(env('MAIL_USERNAME'),'Informática STI');
+            });
+            return $this->crearRespuesta(1, null, 'Se ha enviado el correo general', 200);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
+        }
+    }
 }
