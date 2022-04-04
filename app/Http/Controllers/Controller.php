@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use  App\Models\Estatus;
 
 class Controller extends BaseController
 {
@@ -38,7 +39,7 @@ class Controller extends BaseController
         return $ldate;
     }
     protected function fechaCruda(){
-        $ldate = date('d-m-Y');
+        $ldate = date('Y-m-d');
         return $ldate;
     }
     public function asignaArchivosUsuario($id_usuario, $id_rol, $usuario){
@@ -93,4 +94,62 @@ class Controller extends BaseController
     public function randw($length=10){
         return substr(str_shuffle("qwertyuiopasdfghjklzxcvbnm"),0,$length);
     }
+    public function getEstatusAsignado(){
+        try {
+            $data = Estatus::where('activo', 1)
+                                    ->where('estatus', 'ASIGNADO')                        
+                                    ->first();
+            
+            return $data->id;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }  
+    public function getEstatusTraslado(){
+        try {
+            $data = Estatus::where('activo', 1)
+                                    ->where('estatus', 'TRASLADO')                        
+                                    ->first();
+            return $data->id;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }  
+    public function getEstatusMix($estatus){
+        try {
+            $cuenta = Estatus::where('estatus', $estatus)                        
+                    ->count();
+                   
+            if($cuenta == 0){
+                $objEstatus = new Estatus;
+                $objEstatus->estatus = $estatus;
+                $objEstatus->descripcion = $estatus;
+                $objEstatus->tipo = 2;
+                $objEstatus->activo = true;
+                $objEstatus->timestamps = false;
+                $objEstatus->fecha_creacion = $this->fechaActual();
+                $objEstatus->fecha_modificacion = $this->fechaActual();
+                $objEstatus->usuario_creacion = 0;
+                $objEstatus->usuario_modificacion = 0;
+                $objEstatus->save();
+
+            }
+            $data = Estatus::where('activo', 1)
+                                    ->where('estatus', $estatus)                        
+                                    ->first();
+            return $data->id;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }  
+    public function getEstatusByID($id_estatus){
+        try {
+            $data = Estatus::where('activo', 1)
+                            ->where('id', $id_estatus)                        
+                            ->first();
+            return $data->estatus;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }  
 }

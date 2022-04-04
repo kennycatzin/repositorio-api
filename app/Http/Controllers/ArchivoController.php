@@ -237,30 +237,32 @@ class ArchivoController extends Controller
                             ->join('users as u', 'u.id', '=', 'au.id_usuario')
                             ->join('roles as r', 'r.id', '=', 'u.id_rol')
                             ->join('departamento as d', 'd.id', '=', 'r.id_departamento')
-                            ->select('d.departamento', 'd.correo')
+                            ->select('d.correo')
                             ->where('au.id_archivo', $id_archivo)
                             ->distinct()
                             ->get();
-            // if($count > 20){
-            //     foreach($data_departamentos as $departamento){
-            //         $data = array(
-            //             'equipo' => $departamento->departamento,
-            //             'archivo' => $nombre_archivo,
-            //             'observaciones' => $observaciones
-            //         );
-            //         Mail::send('plantilla_correo', $data, function($message) {
-            //             $message->to($departamento->correo, 'Pruebas')
-            //                     ->subject('Pruebas notificación del correo');
-            //             $message->from(env('MAIL_USERNAME'),'Repositorio interno');
-            //         });
-            //     }
-            // }
-//             $emails = ['myoneemail@esomething.com', 'myother@esomething.com','myother2@esomething.com'];
 
-// Mail::send('emails.welcome', [], function($message) use ($emails)
-// {    
-//     $message->to($emails)->subject('This is test e-mail');    
-// });
+            $depas = array();
+            foreach($data_departamentos as $depa){
+                array_push($depas, $depa->correo);
+            }
+            $configuracion = env('MAIL_ENVIAR', '');
+            if($configuracion == 1){
+                $info = DB::table('archivo')
+                ->select('nombre as observaciones', DB::raw("CONCAT(nombre, ' ',descripcion) AS archivo"))
+                ->where('id', $id_archivo)
+                ->first();
+                $data = array(
+                            'titulo' => "Actualización de documento",
+                            'archivo' => $info->archivo,
+                            'observaciones' =>  "Tiene una nueva versión y se encuentra disponible en el Repositorio."
+                        );
+                Mail::send('plantilla_archivo', $data, function($message) use ($depas) {
+                    $message->to($depas)
+                            ->subject('Actualización de documento');
+                    $message->from(env('MAIL_USERNAME'),'Repositorio');
+                });
+            }
             return $this->crearRespuesta(1, null, 'La imagen ha sido subida con éxito', 201);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);

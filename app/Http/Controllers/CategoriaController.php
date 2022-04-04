@@ -80,7 +80,7 @@ class CategoriaController extends Controller
                 foreach($subcategorias as $subcategoria){
                     $archivos = Archivo::where('id_subcategoria', $subcategoria->id)
                                                 ->where('activo', 1)
-                                                ->orderBy('fecha_modificacion', 'DESC')                        
+                                                ->orderBy('consecutivo', 'DESC')                        
                                                 ->get();
                         $contadorArchivo = 0;
                         foreach($archivos as $archivo){
@@ -88,7 +88,6 @@ class CategoriaController extends Controller
                                         ->select('*')
                                         ->where('activo', 1)
                                         ->where('id_archivo', $archivo->id)    
-                                        ->orderBy('fecha_modificacion', 'DESC')                        
                                         ->get();   
                         foreach($detalles as $miData){
 

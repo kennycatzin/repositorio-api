@@ -296,17 +296,18 @@ class RolController extends Controller
             $configuracion = env('MAIL_ENVIAR', '');
             if($configuracion == 1){
                 $info = DB::table('archivo')
-                ->select('nombre as observaciones', 'descripcion as archivo')
+                ->select('nombre as observaciones', DB::raw("CONCAT(nombre, ' ',descripcion) AS archivo"))
+                ->where('id', $id_archivo)
                 ->first();
                 $data = array(
-                            'equipo' => "equipo",
+                            'titulo' => "Actualización de documento",
                             'archivo' => $info->archivo,
-                            'observaciones' =>  $info->observaciones
+                            'observaciones' =>  "Tiene una nueva versión y se encuentra disponible en el Repositorio."
                         );
-                Mail::send('plantilla_correo', $data, function($message) use ($listCorreos) {
-                    $message->to($listCorreos, 'Pruebas')
-                            ->subject('Pruebas notificación del correo');
-                    $message->from(env('MAIL_USERNAME'),'Repositorio interno');
+                Mail::send('plantilla_archivo', $data, function($message) use ($listCorreos) {
+                    $message->to($listCorreos)
+                            ->subject('Actualización de documento');
+                    $message->from(env('MAIL_USERNAME'),'Repositorio');
                 });
             }
             
@@ -352,7 +353,8 @@ class RolController extends Controller
                                             'c.descripcion as desc_categoria',  
                                             's.id as id_subcategoria',
                                             's.titulo as subcategoria', 
-                                            's.descripcion as desc_subcategoria',  
+                                            's.descripcion as desc_subcategoria', 
+                                            'c.imagen', 
                                             'a.nombre',
                                             'a.descripcion',
                                             'da.url')
@@ -401,6 +403,7 @@ class RolController extends Controller
                                     ->where('a.activo', 1)
                                     ->where('ar.id_rol', $id_rol)
                                     ->where('a.id_subcategoria', $subcat->id)
+                                    ->orderBy('a.consecutivo', 'DESC')
                                     ->get();
                     if($contadorSub == 0){
                         $misSubcategorias=json_decode(json_encode($misSubcategorias), true);

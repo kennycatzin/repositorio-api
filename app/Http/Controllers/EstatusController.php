@@ -70,6 +70,5 @@ class EstatusController extends Controller
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo la actualización la información '.$th->getMessage(), 300);
         }
-    }    
-
+    }
 }

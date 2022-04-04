@@ -104,24 +104,21 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->put('update-estatus/{id_estatus}', 'EstatusController@updateEstatus');
         $router->get('get-estatus', 'EstatusController@getEstatusAll');
         $router->get('get-estatus/{id_estatus}', 'EstatusController@getEstatus');
-        $router->put('update-baja/{id_estatus}', 'EstatusController@setActivoFalsoEstatus');
-
-        
+        $router->put('update-baja/{id_estatus}', 'EstatusController@setActivoFalsoEstatus');        
      });
      $router->group(['prefix' => 'departamento'], function () use ($router) {
-      $router->post('store-departamento', 'DepartamentoController@storeDepartamento');
-      $router->put('update-departamento/{id_departamento}', 'DepartamentoController@updateDepartamento');
-      $router->get('get-departamentos', 'DepartamentoController@getDepartamentos');
-      $router->get('get-departamento/{id_departamento}', 'DepartamentoController@getDepartamento');
-      $router->put('baja-departamento/{id_departamento}', 'DepartamentoController@bajaDepartamento');
-      $router->get('get-departamentos-paginado/{index}', 'DepartamentoController@getDepartamentosPaginado');
-      $router->get('enviar-precio-metal', 'DepartamentoController@cambioPrecioEnviar');
-      $router->post('enviar-bases-diarias', 'DepartamentoController@basesDiariasEnviar');
-      $router->post('enviar-correo-general', 'DepartamentoController@correoGeneralEnviar');
-
-      
-      
-   });
+         $router->post('store-departamento', 'DepartamentoController@storeDepartamento');
+         $router->put('update-departamento/{id_departamento}', 'DepartamentoController@updateDepartamento');
+         $router->get('get-departamentos', 'DepartamentoController@getDepartamentos');
+         $router->get('get-departamento/{id_departamento}', 'DepartamentoController@getDepartamento');
+         $router->put('baja-departamento/{id_departamento}', 'DepartamentoController@bajaDepartamento');
+         $router->get('get-departamentos-paginado/{index}', 'DepartamentoController@getDepartamentosPaginado');
+         $router->get('enviar-precio-metal', 'DepartamentoController@cambioPrecioEnviar');
+         $router->post('enviar-bases-diarias', 'DepartamentoController@basesDiariasEnviar');
+         $router->post('enviar-correo-general', 'DepartamentoController@correoGeneralEnviar');
+         $router->post('enviar-correo-individual', 'DepartamentoController@mandarCorreoIndividual');
+         $router->get('enviar-correo-pruebaaviso', 'DepartamentoController@pruebaAviso');      
+      });
       $router->group(['prefix' => 'tablero'], function () use ($router) {
          $router->post('store-tablero', 'TableroController@storeTablero');
          $router->get('get-tableros', 'TableroController@getTableros');
@@ -129,5 +126,77 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->post('update-tablero/{id_tablero}', 'TableroController@updateTablero');
          $router->post('baja-tablero', 'TableroController@bajaAviso');
          $router->post('get-files-tablero', 'TableroController@getArchivosByEstatus');     
+      });
+      $router->group(['prefix' => 'marca'], function () use ($router) {
+         $router->post('store-marca', 'MarcaController@storeMarca');
+         $router->put('update-marca/{id_marca}', 'MarcaController@updateMarca');
+         $router->get('get-marca', 'MarcaController@getMarcasAll');
+         $router->get('get-marca/{id_marca}', 'MarcaController@getMarca');
+         $router->put('eliminar-marca/{id_marca}', 'MarcaController@setEliminarMarca');   
+         $router->get('get-marca-paginado/{index}', 'MarcaController@getMarcasPaginado');
+         $router->post('busqueda', 'MarcaController@busqueda');         
+      });
+      $router->group(['prefix' => 'licencia'], function () use ($router) {
+         $router->post('store-item', 'LicenciaController@storeItem');
+         $router->put('update-item/{id_item}', 'LicenciaController@updateItem');
+         $router->get('get-item', 'LicenciaController@getAllItems');
+         $router->get('get-item/{id_item}', 'LicenciaController@getItem');
+         $router->put('eliminar-item/{id_item}', 'LicenciaController@setEliminarItem');   
+         $router->get('get-item-paginado/{index}', 'LicenciaController@getItemsPaginado');
+         $router->post('busqueda', 'LicenciaController@busqueda');         
+      });
+      $router->group(['prefix' => 'tipo_equipo'], function () use ($router) {
+         $router->post('store-item', 'TipoEquipoController@storeItem');
+         $router->put('update-item/{id_item}', 'TipoEquipoController@updateItem');
+         $router->get('get-item', 'TipoEquipoController@getAllItems');
+         $router->get('get-item/{id_item}', 'TipoEquipoController@getItem');
+         $router->put('eliminar-item/{id_item}', 'TipoEquipoController@setEliminarItem');   
+         $router->get('get-item-paginado/{index}', 'TipoEquipoController@getItemsPaginado');
+         $router->post('busqueda', 'TipoEquipoController@busqueda');     
+         $router->get('get-items-admin', 'TipoEquipoController@getTipoEquipoAdmin');         
+      });
+      $router->group(['prefix' => 'equipo'], function () use ($router) {
+         $router->post('store-item', 'EquipoController@storeItem');
+         $router->put('update-item/{id_item}', 'EquipoController@updateItem');
+         $router->get('get-item', 'EquipoController@getAllItems');
+         $router->get('get-item/{id_item}', 'EquipoController@getItem');
+         $router->put('eliminar-item/{id_item}', 'EquipoController@setEliminarItem');   
+         $router->get('get-item-paginado/{index}', 'EquipoController@getItemsPaginado');
+         $router->post('busqueda', 'EquipoController@busqueda');   
+         $router->post('get-disponibles-admin', 'EquipoController@getListaEquiposAdmin');         
+      });
+      $router->group(['prefix' => 'articulo'], function () use ($router) {
+         $router->post('store-item', 'ArticuloController@storeItem');
+         $router->put('update-item/{id_item}', 'ArticuloController@updateItem');
+         $router->get('get-item', 'ArticuloController@getAllItems');
+         $router->get('get-item/{id_item}', 'ArticuloController@getItem');
+         $router->put('eliminar-item/{id_item}', 'ArticuloController@setEliminarItem');   
+         $router->get('get-item-paginado/{index}', 'ArticuloController@getItemsPaginado');
+         $router->post('busqueda', 'ArticuloController@busqueda');         
+      });
+      $router->group(['prefix' => 'sucursal'], function () use ($router) {
+         $router->post('store-item', 'SucursalController@storeItem');
+         $router->put('update-item/{id_item}', 'SucursalController@updateItem');
+         $router->get('get-item', 'SucursalController@getAllItems');
+         $router->get('get-item/{id_item}', 'SucursalController@getItem');
+         $router->put('eliminar-item/{id_item}', 'SucursalController@setEliminarItem');   
+         $router->get('get-item-paginado/{index}', 'SucursalController@getItemsPaginado');
+         $router->post('busqueda', 'SucursalController@busqueda');    
+         $router->get('get-items-admin', 'SucursalController@getSucursalesAdmin');         
+      });
+      $router->group(['prefix' => 'asignacion'], function () use ($router) {
+         $router->get('get-asignaciones-paginado/{index}', 'AsignacionController@getAsignaciones');
+         $router->post('store-configuracion', 'AsignacionController@storeConfiguracion');
+         $router->post('delete-configuracion', 'AsignacionController@setAsignacionEliminar');
+         $router->post('store-solicitud', 'AsignacionController@storeSolicitud');         
+         $router->post('atender-detalle-solicitud', 'AsignacionController@atenderDetalleSolicitud');
+         $router->post('eliminar-asignacion-configuracion', 'AsignacionController@eliminarAsignacionEstatus');         
+         $router->post('get-asignacion-detalle', 'AsignacionController@getDetEquipos');         
+      });
+      $router->group(['prefix' => 'solicitud'], function () use ($router) {
+         $router->get('get-equipos/{id_usuario}', 'SolicitudController@getEquipos');
+         $router->get('get-estatus-agregar', 'SolicitudController@getListaEstatusAgregar');
+         $router->post('store-solicitud', 'SolicitudController@storeSolicitud');        
+         $router->get('get-solicitudes/{tipo}', 'SolicitudController@getSolicitudes');
       });
  });

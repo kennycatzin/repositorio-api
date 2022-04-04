@@ -50,7 +50,7 @@
  
  .right {
    flex-basis : 30%;
-   margin-left: 170px;
+   margin-left: 210px;
  }
         .row{
             font-size: 14px;

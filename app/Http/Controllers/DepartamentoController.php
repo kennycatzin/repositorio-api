@@ -125,8 +125,26 @@ class DepartamentoController extends Controller
                         ->subject('Bases diarias');
                 $message->from(env('MAIL_USERNAME'),'Informática STI');
             });
-            return $this->crearRespuesta(1, null, 'Se ha enviado el correo bases diarias', 200);        } catch (\Throwable $th) {
+            return $this->crearRespuesta(1, null, 'Se ha enviado el correo bases diarias', 200);
         }catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
+        }
+    }
+    public function pruebaAviso(){
+        try {
+            $data = array(
+                'titulo' => "Actualización de documento",
+                'fecha_actual' => $this->fechaCruda(),
+                'archivo' => "F-OPE-002 SALIDA DE PRENDAS A RESGUARDO",
+                'observaciones' =>  "Tiene una nueva versión y se encuentra disponible en el Repositorio."
+            );
+            Mail::send('plantilla_archivo', $data, function($message)  {
+                $message->to('informatica@tuereselequipo.com')
+                        ->subject('Actualización de documento');
+                $message->from(env('MAIL_USERNAME'),'Informática STI');
+            });
+            return $this->crearRespuesta(1, null, 'Se ha enviado el correo cambio precio', 200);
+        } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }
@@ -156,6 +174,7 @@ class DepartamentoController extends Controller
             $destino = $ojso["destino"];
             $asunto = $request->get('asunto');
             $cuerpo = $request->get('cuerpo');
+            // $archivo = $request->get('archivo');
 
             $copia = json_decode(json_encode($copia), true);
             $destino = json_decode(json_encode($destino), true);
@@ -170,11 +189,39 @@ class DepartamentoController extends Controller
                 $message->to($destino)
                         ->cc($copia)
                         ->subject($asunto);
+                //$message->attach("C:\Users\AF-70\Documents\AvancesKenny.xlsx");
                 $message->from(env('MAIL_USERNAME'),'Informática STI');
             });
             return $this->crearRespuesta(1, null, 'Se ha enviado el correo general', 200);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
+    }
+    public function mandarCorreoIndividual(Request $request){
+        $json = json_encode($request->input());
+        $ojso = json_decode($json, true);
+        $data = $ojso["data"];
+        foreach($data as $item){
+            $correos = $item['correos'];
+            $url ="\\\\172.18.4.205"."\\".$item["carpeta"];
+            $pass = $item["pass"];
+            $usuario = $item["usuario"];
+            $dataCorreo = array(
+                'titulo' => "Accesos carpeta de respaldo",
+                'observaciones' => "Se envían los accesos para la carpeta de respaldos.",
+                'usuario' => $usuario,
+                'pass' => $pass,
+                'url' => $url,
+                'fecha_actual' => $this->fechaCruda(),
+            );
+            foreach($correos as $correo){
+                Mail::send('plantilla_general', $dataCorreo, function($message) use ($correo) {
+                    $message->to($correo)
+                            ->subject('Accesos carpeta respaldo');
+                    $message->from(env('MAIL_USERNAME'),'Informática STI');
+                });
+            }
+        }
+        return $this->crearRespuesta(1, null, 'Se ha enviado el correo individual', 200);
     }
 }

@@ -250,6 +250,7 @@ class UserController extends Controller
                             ->where('da.actual', 1)
                             ->where('a.id_subcategoria', $id_subcategoria)
                             ->where('au.id_usuario', $id_usuario)
+                            ->orderBy('a.consecutivo', 'ASC')
                             ->get();
             foreach($data as $miData){
 
@@ -370,7 +371,8 @@ class UserController extends Controller
                                     ->join('detalle_archivo as da', 'a.id', '=', 'da.id_archivo')
                                     ->select('c.id as id_categoria', 
                                             'c.titulo as categoria',
-                                            'c.descripcion as desc_categoria',  
+                                            'c.descripcion as desc_categoria', 
+                                            'c.imagen', 
                                             's.id as id_subcategoria',
                                             's.titulo as subcategoria', 
                                             's.descripcion as desc_subcategoria',  
@@ -424,6 +426,7 @@ class UserController extends Controller
                                     ->where('au.id_usuario', $id_usuario)
                                     ->where('a.id_subcategoria', $subcat->id)
                                     ->where('da.actual', 1)
+                                    ->orderBy('a.consecutivo', 'ASC')
                                     ->get();
                                     foreach($misArchivos as $miData){
                                         $miData->url = $miUrl.$miData->url;
@@ -438,6 +441,7 @@ class UserController extends Controller
                     $misCategorias=json_decode(json_encode($misCategorias), true);
                 }
                 $misCategorias[$contador]+=["clave"=>str_replace(' ', '', $categoria->descripcion)];
+                $misCategorias[$contador]+=["icono"=> $miUrl.$categoria->imagen];
                 $misCategorias[$contador]+=["subcategorias"=>$misSubcategorias];
                 $contador ++;
             }
@@ -492,6 +496,7 @@ class UserController extends Controller
                     ->orWhere('u.name', 'LIKE', '%'.$valor.'%')
                     ->orWhere('u.usuario', 'LIKE', '%'.$valor.'%')
                     ->where('u.activo', 1)
+                    ->take(10)
                     ->get();
             return $this->crearRespuesta(1, $data, $contador, 200);            
         } catch (\Throwable $th) {
