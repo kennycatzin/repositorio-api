@@ -174,6 +174,7 @@ class DepartamentoController extends Controller
             $destino = $ojso["destino"];
             $asunto = $request->get('asunto');
             $cuerpo = $request->get('cuerpo');
+            $origen = $request->get('origen');
             // $archivo = $request->get('archivo');
 
             $copia = json_decode(json_encode($copia), true);
@@ -185,12 +186,12 @@ class DepartamentoController extends Controller
                 'observaciones' =>  $cuerpo
             );
 
-            Mail::send('plantilla_general', $data, function($message) use ($copia, $destino, $asunto){
+            Mail::send('plantilla_general', $data, function($message) use ($copia, $destino, $asunto, $origen){
                 $message->to($destino)
                         ->cc($copia)
                         ->subject($asunto);
-                //$message->attach("C:\Users\AF-70\Documents\AvancesKenny.xlsx");
-                $message->from(env('MAIL_USERNAME'),'Informática STI');
+                // $message->attach("C:\Users\AF-70\Documents\Actividades\Solicitudes Sucursal\Solicitud de pendientes sucursal. 15 de abril del 2022.xlsx");
+                $message->from(env('MAIL_USERNAME'), $origen);
             });
             return $this->crearRespuesta(1, null, 'Se ha enviado el correo general', 200);
         } catch (\Throwable $th) {
@@ -217,6 +218,7 @@ class DepartamentoController extends Controller
             foreach($correos as $correo){
                 Mail::send('plantilla_general', $dataCorreo, function($message) use ($correo) {
                     $message->to($correo)
+                            ->cc('supervisoragralconsejo@tuereselequipo.com')
                             ->subject('Accesos carpeta respaldo');
                     $message->from(env('MAIL_USERNAME'),'Informática STI');
                 });

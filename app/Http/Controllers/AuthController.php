@@ -25,7 +25,7 @@ class AuthController extends Controller
         try {
             $user = new User;
             $user->name = $request->input('name');
-            // $user->email = $request->input('email');
+            $user->email = $request->input('email');
             $user->usuario = $request->input('usuario');
             $user->id_rol = 0;
             $user->activo = 1;
@@ -55,7 +55,7 @@ class AuthController extends Controller
             ]);
             $usuario = User::find($id_usuario);
             $usuario->name = $request->get('name');
-            // $usuario->email = $request->get('email');
+            $usuario->email = $request->get('email');
             $usuario->id_rol = $request->get('id_rol');
             $usuario->tipo = $request->get('tipo');
             $usuario->activo = true;

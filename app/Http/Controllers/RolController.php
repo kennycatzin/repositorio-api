@@ -227,9 +227,10 @@ class RolController extends Controller
             $listCorreos = array();
 
             foreach($archivos as $rol){
+
                 $correo = DB::table('roles as r')
-                        ->join('departamento as d', 'd.id', '=', 'r.id_departamento')
-                        ->select('d.correo')
+                        ->join('users as u', 'u.id_rol', '=', 'r.id')
+                        ->select('u.email as correo')
                         ->where('r.id', $rol["id_rol"])
                         ->first();
                 array_push($listCorreos, $correo->correo);

@@ -135,7 +135,9 @@
             <h4 class="fuente">Fecha: {{$fecha_actual}}</h4>
             <p class="fuente">{{$observaciones}}</p>
             <br>
-            <p class="fuente">Sin otro particular reciban un cordial saludo.</p>
+            <p class="fuente">Sin otro particular reciban un cordial saludo. <br>
+                Kenny Catzin.</p>
+
         </form>
 
         <br>

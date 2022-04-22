@@ -62,6 +62,7 @@ class UserController extends Controller
             $tipo = $request->get('tipo');
             $id_rol = $request->get('id_rol');
             $usuario = $request->get('usuario');
+            $email = $request->get('email');
             $archivos = DB::table('archivo_rol')
                         ->select('id_archivo', 'activo')
                         ->where('id_rol', $id_rol)
@@ -102,7 +103,7 @@ class UserController extends Controller
                         }
                     }
                 }
-                DB::update('update users set activo = 1, tipo = ?, id_rol = ? where id = ?', [ $tipo, $id_rol, $id_usuario]);
+                DB::update('update users set activo = 1, email = ?, tipo = ?, id_rol = ? where id = ?', [ $email, $tipo, $id_rol, $id_usuario]);
                 return $this->crearRespuesta(1, null, 'Se ha configurado el perfil', 201);
             }else{
                 return $this->crearRespuesta(0, null, 'No existe una configuración para este perfil', 201);
@@ -463,7 +464,7 @@ class UserController extends Controller
             $data = DB::table('users as u')
                     ->join('roles as r', 'u.id_rol', '=', 'r.id')
                     ->join('departamento as d', 'r.id_departamento', '=', 'd.id')
-                    ->select('u.id', 'u.name as nombre', 'u.tipo', 'u.usuario',
+                    ->select('u.id', 'u.name as nombre', 'u.tipo', 'u.usuario', 'u.email',
                     'u.id_rol', 'r.rol', 'r.id_departamento', 'd.departamento')
                     ->where('u.activo', 1)
                     ->skip($index)
@@ -503,6 +504,7 @@ class UserController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getLine().' '.$th->getMessage(), 300);
         }   
     }
+
     public function guardarUsuarioAdmin(Request $request)
     {
         //validate incoming request 
@@ -514,7 +516,7 @@ class UserController extends Controller
         try {
             $user = new User;
             $user->name = $request->input('name');
-            // $user->email = $request->input('email');
+            $user->email = $request->input('email');
             $user->usuario = $request->input('usuario');
             $user->id_rol = $request->input('id_rol');
             $user->activo = 1;

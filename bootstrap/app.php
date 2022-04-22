@@ -61,6 +61,8 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('mail');
+$app->configure('dompdf');
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -107,6 +109,9 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 $app->register(\Illuminate\Mail\MailServiceProvider::class);
+
+$app->register(\Barryvdh\DomPDF\ServiceProvider::class);
+
 
 /*
 |--------------------------------------------------------------------------

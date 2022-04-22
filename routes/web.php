@@ -132,7 +132,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->put('update-marca/{id_marca}', 'MarcaController@updateMarca');
          $router->get('get-marca', 'MarcaController@getMarcasAll');
          $router->get('get-marca/{id_marca}', 'MarcaController@getMarca');
-         $router->put('eliminar-marca/{id_marca}', 'MarcaController@setEliminarMarca');   
+         $router->post('eliminar-marca', 'MarcaController@setEliminarMarca');   
          $router->get('get-marca-paginado/{index}', 'MarcaController@getMarcasPaginado');
          $router->post('busqueda', 'MarcaController@busqueda');         
       });
@@ -141,9 +141,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->put('update-item/{id_item}', 'LicenciaController@updateItem');
          $router->get('get-item', 'LicenciaController@getAllItems');
          $router->get('get-item/{id_item}', 'LicenciaController@getItem');
-         $router->put('eliminar-item/{id_item}', 'LicenciaController@setEliminarItem');   
+         $router->put('eliminar-item', 'LicenciaController@setEliminarItem');   
          $router->get('get-item-paginado/{index}', 'LicenciaController@getItemsPaginado');
-         $router->post('busqueda', 'LicenciaController@busqueda');         
+         $router->post('busqueda', 'LicenciaController@busqueda');    
+         $router->get('get-estatus-licencias', 'LicenciaController@getEstatusLicencias');    
+
+         
       });
       $router->group(['prefix' => 'tipo_equipo'], function () use ($router) {
          $router->post('store-item', 'TipoEquipoController@storeItem');
@@ -198,5 +201,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->get('get-estatus-agregar', 'SolicitudController@getListaEstatusAgregar');
          $router->post('store-solicitud', 'SolicitudController@storeSolicitud');        
          $router->get('get-solicitudes/{tipo}', 'SolicitudController@getSolicitudes');
+         $router->get('imprimir/{id_solicitud}', 'SolicitudController@imprimir');
+
       });
  });

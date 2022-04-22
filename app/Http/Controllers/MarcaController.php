@@ -30,7 +30,6 @@ class MarcaController extends Controller
             $marca->marca = $request->get('marca');
             $marca->descripcion = $request->get('descripcion');
             $marca->gama = $request->get('gama');
-            $marca->activo = $request->get('activo');;
             $marca->timestamps = false;
             $marca->fecha_modificacion = $this->fechaActual();
             $marca->usuario_modificacion = $request->get('usuario');
@@ -58,9 +57,9 @@ class MarcaController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }    
-    public function setEliminarMarca(Request $request, $id_marca){
+    public function setEliminarMarca(Request $request){
         try {
-            $marca = Marca::find($id_marca);
+            $marca = Marca::find($request->get('id_marca'));
             $marca->activo = false;
             $marca->timestamps = false;
             $marca->fecha_modificacion = $this->fechaActual();

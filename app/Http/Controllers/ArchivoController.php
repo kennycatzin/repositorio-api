@@ -235,9 +235,7 @@ class ArchivoController extends Controller
             $archivo_guardado = $this->fileUpload($request, DB::getPdo()->lastInsertId(), $id_archivo);
             $data_departamentos = DB::table('archivo_usuario as au')
                             ->join('users as u', 'u.id', '=', 'au.id_usuario')
-                            ->join('roles as r', 'r.id', '=', 'u.id_rol')
-                            ->join('departamento as d', 'd.id', '=', 'r.id_departamento')
-                            ->select('d.correo')
+                            ->select('u.email as correo')
                             ->where('au.id_archivo', $id_archivo)
                             ->distinct()
                             ->get();

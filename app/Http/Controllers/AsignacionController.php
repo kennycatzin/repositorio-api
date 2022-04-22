@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AsignacionController extends Controller
 {
@@ -242,16 +243,54 @@ class AsignacionController extends Controller
                         ->count();
             if($activos == 0){
                 $bandera = 1;
+               
                 DB::update('update inv_enc_solicitud 
                 set id_estatus = ?, fecha_modificacion = ?, usuario_modificacion = ?
                 where id = ?', 
                 [$id_estatus_atendido, $this->fechaActual(), $usuario, $encabezado->id_enc_solicitud]);
+                $this->imprimir($encabezado->id_enc_solicitud);
             }
             return $this->crearRespuesta(1, $bandera, 'Se ha creado la solicitud', 200);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo completar la solicitud '.$th->getMessage(), 300);
         }        
     }
+    public function imprimir($id_solicitud){
+        //try {
+            $data = DB::table('inv_enc_solicitud as s')
+                    ->join('inv_det_solicitud as ds', 's.id', '=', 'ds.id_enc_solicitud')
+                    ->join('inv_asignacion as a', 'ds.id_asignacion', '=', 'a.id')
+                    ->join('inv_equipo as eq', 'eq.id', '=', 'a.id_equipo')
+                    ->join('inv_marcas as m', 'eq.id_marca', '=', 'm.id')
+                    ->join('inv_tipo_equipo as te', 'te.id', '=', 'eq.id_tipo_equipo')
+                    ->join('estatus as es', 'es.id', '=', 'ds.id_estatus')
+                    ->join('estatus as ee', 'ee.id', '=', 'eq.id_estatus')
+                    ->select('s.folio', 's.nombre_usuario', 's.nombre_traslado', 's.departamento_traslado', 's.observaciones',
+                            'ds.id', 'ds.id_enc_solicitud', 'ds.observaciones', 'es.estatus as esta_detalle', 'ee.estatus as esta_equipo',
+                            'm.marca', 'te.tipo_equipo', 'eq.numero_serie', 'eq.modelo', 'ds.obs_tecnico')
+                    ->where('ds.activo', 1)
+                    ->where('ds.id_enc_solicitud', $id_solicitud)
+                    ->orderBy('id', 'ASC')                        
+                    ->get(); 
+                    $arrdata = json_decode(json_encode($data), true);
+                    $data =  [
+                        'quantity'      => '1' ,
+                        'description'   => 'some ramdom text',
+                        'price'   => '500',
+                        'data'     => $arrdata
+                    ];
+                    // $data = json_decode(json_encode($data), true);
+
+                    $pdf = PDF::loadView('plantilla_solicitud', compact('data'));
+            // $data = array(
+            //     'tipo_equipo' => 'leyenda'
+            // );//json_decode(json_encode($data), true);   
+            return $pdf->stream('invoice.pdf');
+        // } catch (\Throwable $th) {
+        //     return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getMessage(), 300);
+        // }
+        
+   }
     public function busqueda(Request $request){
         try {
             $id_estatus_baja = $this->getEstatusMix("BAJA");
