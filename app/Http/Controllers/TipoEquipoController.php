@@ -74,7 +74,7 @@ class TipoEquipoController extends Controller
         try {
             $totales = Tipo_equipo::where('activo', 1)
                                     ->count();
-            $resultado = $totales / 8;
+            $resultado = $totales / 5;
             $resultado = ceil($resultado);
             $data = Tipo_equipo::where('activo', 1)
                                     ->skip($index)

@@ -74,7 +74,7 @@ class MarcaController extends Controller
         try {
             $totales = Marca::where('activo', 1)
                                     ->count();
-            $resultado = $totales / 8;
+            $resultado = $totales / 5;
             $resultado = ceil($resultado);
             $data = Marca::where('activo', 1)
                                     ->skip($index)

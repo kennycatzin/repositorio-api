@@ -228,12 +228,25 @@ class RolController extends Controller
 
             foreach($archivos as $rol){
 
+                $cuenta = DB::table('roles as r')
+                        ->join('users as u', 'u.id_rol', '=', 'r.id')
+                        ->select('u.email as correo')
+                        ->where('r.id', $rol["id_rol"])
+                        ->count();
+                
                 $correo = DB::table('roles as r')
                         ->join('users as u', 'u.id_rol', '=', 'r.id')
                         ->select('u.email as correo')
                         ->where('r.id', $rol["id_rol"])
                         ->first();
-                array_push($listCorreos, $correo->correo);
+                if($cuenta > 0){
+                    $correo = DB::table('roles as r')
+                        ->join('users as u', 'u.id_rol', '=', 'r.id')
+                        ->select('u.email as correo')
+                        ->where('r.id', $rol["id_rol"])
+                        ->first();
+                    array_push($listCorreos, $correo->correo);
+                }   
                 $temp_data = DB::table('archivo_rol')
                             ->select('*')
                             ->where('id_rol', $rol["id_rol"])

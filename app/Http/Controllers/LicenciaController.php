@@ -104,13 +104,26 @@ class LicenciaController extends Controller
     public function busqueda(Request $request){
         try {
             $valor = $request['busqueda'];
+            $conteo = DB::table('inv_licencias as l')
+            ->join('estatus as e', 'e.id', '=', 'l.id_estatus')
+            ->select('l.*', 'e.estatus')
+            ->orWhere('l.licencia', 'LIKE', '%'.$valor.'%')
+            ->orWhere('e.estatus', 'LIKE', '%'.$valor.'%')
+            ->where('l.activo', 1)
+            ->count();
             $query = DB::table('inv_licencias as l')
             ->join('estatus as e', 'e.id', '=', 'l.id_estatus')
             ->select('l.*', 'e.estatus')
             ->orWhere('l.licencia', 'LIKE', '%'.$valor.'%')
+            ->orWhere('e.estatus', 'LIKE', '%'.$valor.'%')
             ->where('l.activo', 1)
             ->get();
-            return $this->crearRespuesta(1, $query, 'info', 200);
+            return response()->json([
+                'data' => $query,
+                'mensaje' => $conteo,
+                'paginas' => 1,
+                'ok' => true
+            ], 200);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
