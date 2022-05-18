@@ -136,7 +136,8 @@
             <p class="fuente">{{$observaciones}}</p>
             {{-- <h4 class="fuente">Url: {{$url}} <br>Usuario: {{$usuario}} <br> Contraseña: {{$pass}} </h4> --}}
             <br>
-            <p class="fuente">Sin otro particular reciban un cordial saludo.</p>
+            <p class="fuente">Sin otro particular reciban un cordial saludo. <br>
+                Kenny Catzin.</p>
         </form>
 
         <br>

@@ -278,8 +278,8 @@ class UserController extends Controller
     }
     public function totalesDashboard($id_usuario){
         try {
-            $id_estatus_leido = 3;
-            $id_estatus_nuevo = 4;
+            $id_estatus_leido = $this->getEstatusMix("VISTO");
+            $id_estatus_nuevo = $this->getEstatusMix("NUEVO");
             $miUrl = env('APP_URL', '');
             $contador = 1;
             $leidos=DB::table('archivo_usuario')
@@ -304,7 +304,7 @@ class UserController extends Controller
 
             $tableros = DB::table('tablero')
                         ->select('id', 'titulo', 'descripcion', 'url', 'imagen')
-                        ->orderBy('titulo', 'ASC')
+                        ->orderBy('orden', 'ASC')
                         ->whereDate('fecha_inicio', '<=', $this->fechaActual())
                         ->whereDate('fecha_final', '>=', $this->fechaActual())
                         ->where('activo', 1)
@@ -492,7 +492,7 @@ class UserController extends Controller
             $data = DB::table('users as u')
                     ->join('roles as r', 'u.id_rol', '=', 'r.id')
                     ->join('departamento as d', 'r.id_departamento', '=', 'd.id')
-                    ->select('u.id', 'u.name as nombre', 'u.tipo', 'u.usuario',
+                    ->select('u.id', 'u.name as nombre', 'u.tipo', 'u.usuario', 'u.email',
                             'u.id_rol', 'r.rol', 'r.id_departamento', 'd.departamento')
                     ->orWhere('u.name', 'LIKE', '%'.$valor.'%')
                     ->orWhere('u.usuario', 'LIKE', '%'.$valor.'%')

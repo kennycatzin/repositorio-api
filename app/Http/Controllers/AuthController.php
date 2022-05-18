@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use  App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -54,6 +55,9 @@ class AuthController extends Controller
                 'password' => 'confirmed',
             ]);
             $usuario = User::find($id_usuario);
+            if($usuario->id_rol != $request->get('id_rol')){
+                $this->asignaArchivosUsuario($id_usuario, $request->get('id_rol'), $request->get('id_usuario'));
+            }
             $usuario->name = $request->get('name');
             $usuario->email = $request->get('email');
             $usuario->id_rol = $request->get('id_rol');
@@ -67,7 +71,8 @@ class AuthController extends Controller
                 $usuario->password = app('hash')->make($plainPassword);
             }            
             $usuario->save();
-           $this->asignaArchivosUsuario($id_usuario, $request->get('id_rol'), $request->get('id_usuario'));
+            // TODO: validación nuevo rol
+
             return $this->crearRespuesta(1, $usuario, 'Se ha modificado la información', 201);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'No se pudo completar la información '.$th->getMessage(). ' '.$th->getLine(), 300);
@@ -85,6 +90,10 @@ class AuthController extends Controller
         $data = User::where('usuario', $request["usuario"])->first();
         $count = User::where('usuario', $request["usuario"])->count();
 
+        if($data == null){
+            return $this->crearRespuesta(0, null, 'No existe el usuario', 300);
+        }
+        $this->setHoraLogin($data->id);
 
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -100,11 +109,20 @@ class AuthController extends Controller
 
         $user = User::where('id', $id)->count();
         $user_data = User::where('id', $id)->first();
-        
+        $this->setHoraLogin($id);
         if($user > 0){
             return $this->respondWithToken("123456789", $user_data);
         }else{
             return response()->json(['message' => 'Unauthorized'], 401);
+        }
+    }
+    protected function setHoraLogin($id_usuario){
+        try {
+            $usuario = User::find($id_usuario);
+            $usuario->ultima_conexion = $this->fechaCruda();    
+            $usuario->save();
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 }

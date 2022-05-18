@@ -9,8 +9,9 @@ class EquipoController extends Controller
 {
     public function storeItem(Request $request){
         try {
+            $id_disponible = $this->getEstatusMix("DISPONIBLE");
             $obj = new Equipo;
-            $obj->id_estatus = 1;
+            $obj->id_estatus = $id_disponible;
             $obj->id_marca = $request->get('id_marca');
             $obj->id_licencia_office = $request->get('id_licencia_office');
             $obj->id_licencia_windows = $request->get('id_licencia_windows');

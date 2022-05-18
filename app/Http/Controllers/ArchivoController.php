@@ -278,6 +278,7 @@ class ArchivoController extends Controller
                                         ->where('ar.activo', 1)
                                         ->where('ar.id_rol', $id_rol)
                                         ->where('a.id_subcategoria', $id_subcategoria)
+                                        ->orderBy('descripcion', 'ASC')
                                         ->get();
             foreach ($archivos_configurados as $archivo) {
                 array_push($pila, $archivo->id_archivo);
@@ -287,6 +288,7 @@ class ArchivoController extends Controller
             ->where('id_subcategoria', $id_subcategoria)
             ->where('activo', 1)
             ->whereNotIn('id', $pila)
+            ->orderBy('descripcion', 'ASC')
             ->get();
             $data = [
                     "archivos_crudos" => $archivos_crudos,
@@ -348,6 +350,33 @@ class ArchivoController extends Controller
                 "roles" => $roles
             );
             return $this->crearRespuesta(1, $auxiliar, 'Info', 200);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);
+        }
+    }
+    public function busquedaArchivo(Request $request){
+        try {
+            $valor = $request['busqueda'];
+            $miUrl = env('APP_URL', '');
+            $data = DB::table('archivo_usuario as au')
+            ->join('archivo as a', 'a.id', '=', 'au.id_archivo')
+            ->join('detalle_archivo as da', 'a.id', 'da.id_archivo')
+            ->join('subcategoria as s', 's.id', 'a.id_subcategoria')
+            ->join('categoria as c', 'c.id', 's.id_categoria')
+            ->select('au.id', 'a.id as ii', 'a.nombre', 'a.descripcion', 'da.url', 
+                    'c.titulo as categoria', 's.titulo as subcategoria')
+            ->where('au.activo', 1)
+            ->where('au.id_usuario', $request->get('id_usuario'))
+            ->where(function ($query) use ($valor) {
+                    $query->orWhere('a.nombre', 'LIKE', '%'.$valor.'%')
+                    ->orWhere('a.descripcion', 'LIKE', '%'.$valor.'%');
+            })
+            ->where('da.actual', 1)
+            ->get();
+            foreach($data as $miData){
+                $miData->url = $miUrl.$miData->url;
+            } 
+            return $this->crearRespuesta(1, $data, 'Info', 200);
         } catch (\Throwable $th) {
             return $this->crearRespuesta(0, null, 'Ha ocurrido un error '.$th->getMessage(), 300);
         }

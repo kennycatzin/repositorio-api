@@ -97,7 +97,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->put('delete-archivo', 'ArchivoController@bajaArchivo');    
         
         $router->get('get-aux-formulario-archivo', 'ArchivoController@getAuxFormularioArchivo');
+        $router->post('get-busqueda-archivos', 'ArchivoController@busquedaArchivo');
 
+        
      });
      $router->group(['prefix' => 'estatus'], function () use ($router) {
         $router->post('store-estatus', 'EstatusController@storeEstatus');
@@ -117,7 +119,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->post('enviar-bases-diarias', 'DepartamentoController@basesDiariasEnviar');
          $router->post('enviar-correo-general', 'DepartamentoController@correoGeneralEnviar');
          $router->post('enviar-correo-individual', 'DepartamentoController@mandarCorreoIndividual');
-         $router->get('enviar-correo-pruebaaviso', 'DepartamentoController@pruebaAviso');      
+         $router->get('enviar-correo-pruebaaviso', 'DepartamentoController@pruebaAviso');     
+         $router->get('enviar-correo-sucursales', 'DepartamentoController@pendientesSucursalesEnviar');     
       });
       $router->group(['prefix' => 'tablero'], function () use ($router) {
          $router->post('store-tablero', 'TableroController@storeTablero');
@@ -168,7 +171,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->post('busqueda', 'EquipoController@busqueda');   
          $router->post('get-disponibles-admin', 'EquipoController@getListaEquiposAdmin');  
          $router->get('get-helpers', 'EquipoController@getHelpers');
-
          $router->get('get-licencias-disponibles/{id_licencia_o}/{id_licencia_w}', 'EquipoController@getLicenciasDisponibles');
 
       });
@@ -208,4 +210,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
          $router->get('imprimir/{id_solicitud}', 'SolicitudController@imprimir');
 
       });
+      $router->group(['prefix' => 'reporte'], function () use ($router) {
+         $router->get('get-documentosporrol', 'ReporteController@getDocumentosPorRol');
+         $router->get('get-info-usuarios', 'ReporteController@getInfoUsuarios');
+
+         
+      });
+
+      
  });

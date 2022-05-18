@@ -13,6 +13,7 @@ class TableroController extends Controller
             $tablero->titulo = $request->get('titulo');
             $tablero->descripcion = $request->get('descripcion');
             $tablero->tipo = $request->get('tipo');
+            $tablero->orden = $request->get('orden');
             $tablero->fecha_final = $request->get('fecha_final');
             $tablero->fecha_inicio = $request->get('fecha_inicio');
             $tablero->activo = true;
@@ -32,7 +33,7 @@ class TableroController extends Controller
         try {
             $miUrl = env('APP_URL', '');
             $tableros = DB::table('tablero')
-                        ->orderBy('titulo', 'ASC')
+                        ->orderBy('orden', 'ASC')
                         ->whereDate('fecha_inicio', '<=', $this->fechaActual())
                         ->whereDate('fecha_final', '>=', $this->fechaActual())
                         ->where('activo', true)
@@ -94,6 +95,7 @@ class TableroController extends Controller
             $tablero->titulo = $request['titulo'];
             $tablero->descripcion = $request->get('descripcion');
             $tablero->tipo = $request->get('tipo');
+            $tablero->orden = $request->get('orden');
             $tablero->fecha_final = $request->get('fecha_final');
             $tablero->fecha_inicio = $request->get('fecha_inicio');
             $tablero->timestamps = false;

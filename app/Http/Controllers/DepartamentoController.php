@@ -148,6 +148,25 @@ class DepartamentoController extends Controller
             return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
         }
     }
+    public function pendientesSucursalesEnviar(){
+        try {
+            $vencimiento = date( "d-m-Y", strtotime( "+3 day", strtotime( $this->fechaCruda() ) ) ); 
+            $data = array(
+                'titulo' => "Solicitud de pendientes en sucursales",
+                'fecha_actual' => $this->fechaCruda(),
+                'observaciones' =>  "Por este medio se solicita los pendientes que tienen respecto al equipo de cómputo que pueda estar afectando la atención al cliente. Favor de mandar la lista por esta línea de correo a más tardar la fecha ".$vencimiento
+            );
+            Mail::send('plantilla_informativa', $data, function($message)  {
+                $message->to('sucursales@tuereselequipo.com', 'Precio metal')
+                        ->cc(['dudasdesucursales@tuereselequipo.com', 'supervisoragralconsejo@tuereselequipo.com','gerente_general@tuereselequipo.com'])
+                        ->subject('Solicitud de pendientes en sucursales');
+                $message->from(env('MAIL_USERNAME'),'Informática STI');
+            });
+            return $this->crearRespuesta(1, null, 'Se ha enviado el correo cambio precio', 200);
+        } catch (\Throwable $th) {
+            return $this->crearRespuesta(0, null, 'No se pudo obtener la información '.$th->getMessage(), 300);
+        }
+    }
     public function cambioPrecioEnviar(){
         try {
             $data = array(
@@ -190,7 +209,7 @@ class DepartamentoController extends Controller
                 $message->to($destino)
                         ->cc($copia)
                         ->subject($asunto);
-                // $message->attach("C:\Users\AF-70\Documents\Actividades\Solicitudes Sucursal\Solicitud de pendientes sucursal. 15 de abril del 2022.xlsx");
+                $message->attach("C:\Users\AF-70\Documents\Actividades\Solicitudes Sucursal\Solicitud de pendientes sucursal 13 de mayo del 2022.xlsx");
                 $message->from(env('MAIL_USERNAME'), $origen);
             });
             return $this->crearRespuesta(1, null, 'Se ha enviado el correo general', 200);
